@@ -37,190 +37,36 @@ def plotsurface(ax, x, y, Z, clim=None):
 
 
 """
-debugPlot - create frame
+plotExplanation - plot explanation created by GCE.explain().
+
+Rows in output figure correspond to samples (first dimension of Xhats);
+columns correspond to latent values in sweep.
+
+:param Xhats: result from GCE.explain()
+:param yhats: result from GCE.explain()
+:param save_path: if provided, will export to {<save_path>_latentdimX.svg}
 """
-#@gif.frame
-def debugPlot_frame(X, Xhat, W, What, k, steps, debug, params, classifier, decoded_points):
-    
-    plt.figure(figsize=(24, 6), dpi=100)
-    
-    nalpha = params["alpha_dim"]
-    nbeta = params["z_dim"] - params["alpha_dim"]
-    
-    plot_X = X[0:params["plot_batchsize"],:]
-    plot_Y = classifier(torch.from_numpy(plot_X).float())[0].detach().numpy()
-    plot_x1min, plot_x2min = 1.5 * plot_X.min(axis=0)
-    plot_x1max, plot_x2max = 1.5 * plot_X.max(axis=0)
-    
-    print('Training step %d/%d: updating plot...' % (k, steps))
-    plt.clf()
-    cols = cm.get_cmap('plasma')
-    
-    # training data, samples, and learned What
-    if params["decoder_net"] is "linGauss":
-        plt.subplot(1,4,1)
-        plot_Xhat = Xhat.detach().numpy()
-        plt.scatter(plot_X[:,0], plot_X[:,1], c=plot_Y[:,0], alpha=0.5)
-        plt.scatter(plot_Xhat[:,0], plot_Xhat[:,1], linewidth=0.5, c='c', marker='x', alpha=0.3)
-        plot_linex = np.array([plot_x1min, plot_x1max])
-        if params["classifier_net"] is "oneHyperplane":
-            plot_w = W[:,0]
-            plt.plot(plot_linex, -plot_w[0]/plot_w[1]*plot_linex, c='k', ls=':')
-        elif params["classifier_net"] is "twoHyperplane":
-            plot_w1 = W[:,0]
-            plot_w2 = W[:,1]
-            plt.plot(plot_linex, -plot_w1[0]/plot_w1[1]*plot_linex, c='k', ls=':')
-            plt.plot(plot_linex, -plot_w2[0]/plot_w2[1]*plot_linex, c='k', ls=':')
-        for i in range(nalpha+nbeta):
-            plot_what = What.detach().numpy()[:,i]
-            if i < nalpha:
-                plt.plot(plot_linex, -plot_what[0]/plot_what[1]*plot_linex,
-                         label=r'$\widehat{w}_%d$ ($\alpha_%d$)'%(i+1,i+1))
-            else:
-                plt.plot(plot_linex, -plot_what[0]/plot_what[1]*plot_linex, ls='--',
-                         label=r'$\widehat{w}_%d$ ($\beta_%d$)'%(i+1,i-nalpha+1))
-        plt.xlim((plot_x1min, plot_x1max))
-        plt.ylim((plot_x2min, plot_x2max))
-        plt.legend()
-        plt.gca().set_aspect('equal', adjustable='box')
-        plt.grid(True)
-    
-    # alpha and beta
-    nstd = 2.
-    cols = cm.get_cmap('viridis')
-    naihat_vals = decoded_points["samples"].shape[2]
-    z_dim = decoded_points["samples"].shape[3]
-    for i in range(nalpha+nbeta):
-        plt.subplot(nalpha+nbeta,4,i*4+2)
-        for j in range(naihat_vals):
-            X = decoded_points["samples"][:,:,j,i]
-            mu = np.mean(X, axis=1)
-            Sigma = 1./X.shape[1] * np.matmul(X, X.T)
-            w, v = np.linalg.eig(Sigma)
-            theta = -np.arctan(v[0,0]/v[1,0])/np.pi*180.
-            ellipse = matplotlib.patches.Ellipse((mu[0],mu[1]),nstd*w[1],nstd*w[0],angle=theta,alpha=0.5,color=cols(float(j)/naihat_vals))
-            if i < nalpha:
-                plt.title(r'$p(x|\alpha_%d=\widehat{\alpha}_%d)$'%(i+1,i+1))
-            else:
-                plt.title(r'$p(x|\beta_%d=\widehat{\beta}_%d)$'%(i-nalpha+1,i-nalpha+1))
-            plt.gca().add_patch(ellipse)
-        plt.plot(np.mean(decoded_points["samples"][:,:,:,i],axis=1)[0,:],
-                 np.mean(decoded_points["samples"][:,:,:,i],axis=1)[1,:],
-                 c='k')
-        plt.axis('equal')
-        plt.gca().set(xlim=(-10,10),ylim=(-10,10))
-        plt.grid(True)
-    
-    # loss
-    plt.subplot(params["z_dim"],4,3)
-    plt.plot(np.arange(k)+1, debug["loss"][:k], linewidth=0.5, label="total loss")
-    plt.grid(True)
-    plt.legend()
-    plt.xlim((1, steps))
-    plt.title("Training step %d/%d" % (k, steps))
-    plt.subplot(3,4,7)
-    plt.plot(np.arange(k)+1, debug["loss_nll"][:k], linewidth=0.5, label="likelihood")
-    plt.grid(True)
-    plt.legend()
-    plt.xlim((1, steps))
-    plt.subplot(3,4,11)
-    plt.plot(np.arange(k)+1, debug["loss_ce"][:k], linewidth=0.5, label="causal effect")
-    #plt.yscale('log')
-    plt.grid(True)
-    plt.legend()
-    plt.xlim((1, steps))
-    
-    # alignment of What
-    if params["decoder_net"] is "linGauss":
-        if params["classifier_net"] is "oneHyperplane":
-            plt.subplot(2,4,4)
-            for i in range(1,nalpha+nbeta+1):
-                plt.plot(np.arange(k)+1, debug["cossim_w1what%d"%(i)][:k],
-                         linewidth=2.0, label="$<w_1,\widehat{w}_%d>$"%(i))
-            plt.grid(True)
-            plt.legend()
-            plt.xlim((1, steps))
-            plt.ylim((-1, 1))
-            plt.subplot(2,4,8)
-            for i in range(1,nalpha+nbeta+1):
-                for j in range(i+1,nalpha+nbeta+1):
-                    plt.plot(np.arange(k)+1, debug["cossim_what%dwhat%d"%(i,j)][:k],
-                         linewidth=2.0, label="$<\widehat{w}_%d,\widehat{w}_%d>$"%(i,j))
-            plt.grid(True)
-            plt.legend()
-            plt.xlim((1, steps))
-            plt.ylim((-1, 1))
-        elif params["classifier_net"] is "twoHyperplane":
-            plt.subplot(3,4,4)
-            for i in range(1,nalpha+nbeta+1):
-                plt.plot(np.arange(k)+1, debug["cossim_w1what%d"%(i)][:k],
-                         linewidth=2.0, label="$<w_1,\widehat{w}_%d>$"%(i))
-            plt.grid(True)
-            plt.legend()
-            plt.xlim((1, steps))
-            plt.ylim((-1, 1))
-            plt.subplot(3,4,8)
-            for i in range(1,nalpha+nbeta+1):
-                plt.plot(np.arange(k)+1, debug["cossim_w2what%d"%(i)][:k],
-                         linewidth=2.0, label="$<w_2,\widehat{w}_%d>$"%(i))
-            plt.grid(True)
-            plt.legend()
-            plt.xlim((1, steps))
-            plt.ylim((-1, 1))
-            plt.subplot(3,4,12)
-            for i in range(1,nalpha+nbeta+1):
-                for j in range(i+1,nalpha+nbeta+1):
-                    plt.plot(np.arange(k)+1, debug["cossim_what%dwhat%d"%(i,j)][:k],
-                         linewidth=2.0, label="$<\widehat{w}_%d,\widehat{w}_%d>$"%(i,j))
-            plt.grid(True)
-            plt.legend()
-            plt.xlim((1, steps))
-            plt.ylim((-1, 1))
-    
-    # draw complete plot
-    plt.tight_layout()
-    plt.show()
-    plt.draw()
-    plt.pause(0.01)
+def plotExplanation(Xhats, yhats, save_path=None):
+    cols = [[0.047,0.482,0.863],[1.000,0.761,0.039],[0.561,0.788,0.227]]
+    border_size = 3
+    (nsamp,z_dim,nz_sweep,nrows,ncols,nchans) = Xhats.shape
+    for latent_dim in range(z_dim):
+        fig, axs = plt.subplots(nsamp, nz_sweep)
+        for isamp in range(nsamp):
+            for iz in range(nz_sweep):
+                img = Xhats[isamp,latent_dim,iz,:,:,0].squeeze()
+                yhat = int(yhats[isamp,latent_dim,iz])
+                img_bordered = np.tile(np.expand_dims(np.array(cols[yhat]),(0,1)),
+                    (nrows+2*border_size,ncols+2*border_size,1))
+                img_bordered[border_size:-border_size,border_size:-border_size,:] = \
+                    np.tile(np.expand_dims(img,2),(1,1,3))
+                axs[isamp,iz].imshow(img_bordered, interpolation='nearest')
+                axs[isamp,iz].axis('off')
+        axs[0,round(nz_sweep/2)-1].set_title('Sweep latent dimension %d' % (latent_dim+1))
+        if save_path is not None:
+            plt.savefig('./%s_latentdim%d.svg' % (save_path,latent_dim+1), bbox_inches=0)
 
-#@gif.frame
-def latentFactorPlot_frame(X, params, classifier, xposterior_samps, aihat_vals, i):
-    plt.figure(figsize=(18, 6), dpi=100)
-    plt.clf()
-    
-    plot_X = X[0:params["plot_batchsize"],:]
-    plot_Y = classifier(torch.from_numpy(plot_X).float())[0].detach().numpy()
-    plot_x1min, plot_x2min = 1.5 * plot_X.min(axis=0)
-    plot_x1max, plot_x2max = 1.5 * plot_X.max(axis=0)
-                
-    # plot samples
-    for l in range(xposterior_samps.shape[4]):
-        for k in range(3):
-            plt.subplot(3,5,k*5+l+1)
-            plt.cla()
-            plt.scatter(plot_X[:,0], plot_X[:,1], c=plot_Y[:,0], s=0.1, alpha=0.5)
-            plt.scatter(np.squeeze(xposterior_samps[0,:,i,k,l]),
-                        np.squeeze(xposterior_samps[1,:,i,k,l]),
-                        linewidth=0.5, c='k', marker='.')
-            plt.grid(True)
-            plt.xlim((-3, 3))
-            plt.ylim((-3, 3))
-            plt.gca().set_aspect('equal', adjustable='box')
-            plt.title(r'$p(x|\alpha_%d=%.2f)$' % (k+1, aihat_vals[i]))
-            plt.tight_layout()
-        plt.show()
-        plt.draw()
-        plt.pause(0.01)
 
-def latentFactorPlot(X, params, classifier, xposterior_samps, aihat_vals):
-    print('Creating plot...')
-    frames = []
-    for i in range(xposterior_samps.shape[2]):
-        frame = latentFactorPlot_frame(X, params, classifier, xposterior_samps, aihat_vals, i)
-        frames.append(frame)
-    gif.save(frames, "results_samp.gif", duration=100)
-    print('Done! Saved to results_samp.gif.')
-    
 def outline_mask(ax, mask, bounds=(0,1,0,1), color=(0,0,0,0.25)):
     # https://stackoverflow.com/questions/24539296/outline-a-region-in-a-graph
     

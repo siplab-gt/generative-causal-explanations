@@ -87,6 +87,8 @@ class GenerativeCausalExplainer:
               use_ce = True):
     
         # initialize
+        self.K = K
+        self.L = L
         ntrain = X.shape[0]
         sample_input = torch.from_numpy(X[0]).unsqueeze(0).float().permute(0,3,1,2)
         M = self.classifier(sample_input.to(self.device))[0].shape[1]
@@ -189,3 +191,28 @@ class GenerativeCausalExplainer:
             if self.params['debug_print']:
                 print('Finished saving data to ' + matfilename)
         return debug
+    
+    """
+    Generate explanation for input x.
+    :param x: input to explain, torch(nsamp,nrows,ncols,nchans)
+    :param zs_sweep: array of latent space perturbations for explanation
+    :return Xhats: output explanation, (nsamp,z_dim,len(zs_sweep),nrows,ncols,nchans)
+    :return yhats: classifier output corresponding to each entry of Xhats
+    """
+    def explain(self, x, zs_sweep, ):
+        (nsamples,nrows,ncols,nchans) = x.shape
+        Xhats = np.zeros((nsamples,self.K+self.L,len(zs_sweep),nrows,ncols,nchans))
+        yhats = np.zeros((nsamples,self.K+self.L,len(zs_sweep)))
+        for isamp in range(nsamples):
+            x_torch = x[isamp:isamp+1,:,:,:].permute(0,3,1,2).float().to(self.device)
+            z = self.encoder(x_torch)[0][0].detach().cpu().numpy()
+            for latent_dim in range(self.K+self.L):
+                for (iz, z_sweep) in enumerate(zs_sweep):
+                    ztilde = z.copy()
+                    ztilde[latent_dim] += z_sweep
+                    xhat = self.decoder(torch.unsqueeze(torch.from_numpy(ztilde),0).to(self.device))
+                    yhat = np.argmax(self.classifier(xhat)[0].detach().cpu().numpy())
+                    img = xhat.permute(0,2,3,1).detach().cpu().numpy()
+                    Xhats[isamp,latent_dim,iz,:,:,:] = img
+                    yhats[isamp,latent_dim,iz] = yhat
+        return Xhats, yhats
