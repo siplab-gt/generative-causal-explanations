@@ -76,8 +76,8 @@ class GenerativeCausalExplainer:
     """
     def train(self, X, K, L,
               steps = 50000,
-              Nalpha = 4,
-              Nbeta = 4,
+              Nalpha = 50,
+              Nbeta = 50,
               lam = 0.0001,
               causal_obj = 'JOINT_UNCOND',
               batch_size = 100,
@@ -87,6 +87,29 @@ class GenerativeCausalExplainer:
               use_ce = True):
     
         # initialize
+        ntrain = X.shape[0]
+        sample_input = torch.from_numpy(X[0]).unsqueeze(0).float().permute(0,3,1,2)
+        M = self.classifier(sample_input.to(self.device))[0].shape[1]
+        self.train_params = {
+                 'K'                 : K,
+                 'L'                 : L,
+                 'steps'             : steps,
+                 'Nalpha'            : Nalpha,
+                 'Nbeta'             : Nbeta,
+                 'lambda'            : lam,
+                 'causal_obj'        : causal_obj,
+                 'batch_size'        : batch_size,
+                 'lr'                : lr,
+                 'b1'                : b1,
+                 'b2'                : b2,
+                 'use_ce'            : use_ce}
+        ceparams = {
+                  'Nalpha'           : Nalpha,
+                  'Nbeta'            : Nbeta,
+                  'K'                : K,
+                  'L'                : L,
+                  'z_dim'            : K+L,
+                  'M'                : M}
         debug = {'loss'              : np.zeros((steps)),
                  'loss_ce'           : np.zeros((steps)),
                  'loss_nll'          : np.zeros((steps)),
@@ -94,9 +117,6 @@ class GenerativeCausalExplainer:
                  'loss_nll_quadform' : np.zeros((steps)),
                  'loss_nll_mse'      : np.zeros((steps)),
                  'loss_nll_kld'      : np.zeros((steps))}
-        ntrain = X.shape[0]
-        sample_input = torch.from_numpy(X[0]).unsqueeze(0).float().permute(0,3,1,2)
-        M = self.classifier(sample_input.to(self.device))[0].shape[1]
 
         # initialize for training
         opt_params = list(self.decoder.parameters()) + list(self.encoder.parameters())
@@ -117,16 +137,6 @@ class GenerativeCausalExplainer:
             nll, nll_mse, nll_kld = loss_functions.VAE_LL_loss(Xbatch, Xhat, logvar, mu)
 
             # compute causal effect
-            ceparams = {'Nalpha' : Nalpha,
-                        'Nbeta' : Nbeta,
-                        'K' : K,
-                        'L' : L,
-                        'z_dim' : K+L,
-                        'y_dim' : M, # TODO
-                        'alpha_dim' : K, # TODO
-                        'beta_dim' : L, # TODO
-                        'decoder_net' : 'VAE',
-                        'M' : M}
             if causal_obj == 'IND_UNCOND':
                 causalEffect, ceDebug = causaleffect.ind_uncond(ceparams,
                     self.decoder, self.classifier, self.device)
@@ -167,36 +177,7 @@ class GenerativeCausalExplainer:
                     'loss' : loss,
                     }, '%s_batch_%d.pt' % \
                     (self.params['save_dir'], self.params['batch_size']))
-                """
-                sample_latent,mu,var = encoder(sample_inputs_torch)
-                sample_inputs_torch_new = sample_inputs_torch.permute(0,2,3,1)
-                sample_inputs_np = sample_inputs_torch_new.detach().cpu().numpy()
-                sample_img = decoder(sample_latent)
-                sample_latent_small = sample_latent[0:10,:]
-                imgOut_real,probOut_real,latentOut_real = sweepLatentFactors(sample_latent_small,
-                    decoder,classifier,device,img_size,c_dim,y_dim,False)
-                rand_latent = torch.from_numpy(np.random.randn(10,z_dim)).float().to(device)
-                imgOut_rand,probOut_rand,latentOut_rand = sweepLatentFactors(rand_latent,
-                    decoder,classifier,device,img_size,c_dim,y_dim,False)
-                samples = sample_img
-                samples = samples.permute(0,2,3,1)
-                samples = samples.detach().cpu().numpy()
-                save_images(samples, [8,8],
-                                    '{}train_{:04d}.png'.format(save_dir, k))
-                sio.savemat(save_dir + 'sweepLatentFactors.mat',
-                            {'imgOut_real'    : imgOut_real, 
-                             'probOut_real'   : probOut_real, 
-                             'latentOut_real' : latentOut_real,
-                             'imgOut_rand'    : imgOut_rand,
-                             'probOut_rand'   : probOut_rand,
-                             'latentOut_rand' : latentOut_rand,
-                             'loss_total'     : debug["loss"][:k],
-                             'loss_ce'        : debug["loss_ce"][:k],
-                             'loss_nll'       : debug['loss_nll'][:k],
-                             'samples_out'    : samples,
-                             'sample_inputs'  : sample_inputs_np})
-                """
-            
+        
         # save/return debug data from entire training run
         debug['Xbatch'] = Xbatch.detach().cpu().numpy()
         debug['Xhat'] = Xhat.detach().cpu().numpy()
