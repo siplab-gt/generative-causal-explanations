@@ -1,5 +1,6 @@
-import numpy as np
+import os
+print('current path: %s' % os.getcwd())
+#print('contents of current path: %s' % os.listdir('.'))
 
-x = np.array([2])
-y = np.array([3])
-print(x)
+import causaleffect
+causaleffect.joint_uncond()

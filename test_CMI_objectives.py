@@ -2,7 +2,7 @@ from CVAE import *
 
 obj_sweep = ["IND_UNCOND", "IND_COND", "JOINT_UNCOND", "JOINT_COND"]
 lambda_sweep = [0.000001]#, 0.00001, 0.0001]
-randseed_sweep = [1, 2, 3, 4, 5, 6]
+randseed_sweep = [1, 2, 3]
 sweep_params = {"obj" : obj_sweep, "lambda" : lambda_sweep, "randseed" : randseed_sweep}
 
 steps = 6000
@@ -27,7 +27,7 @@ for i_obj, obj in enumerate(obj_sweep):
             print("Objective %d/%d, lambda %d/%d, randseed %d/%d..." % \
                   (i_obj+1, len(obj_sweep),
                   i_lam+1, len(lambda_sweep),
-                  i_randseed+1, len(randseed_sweep)))            
+                  i_randseed+1, len(randseed_sweep)))
             trial_results = CVAE(steps = steps,
                                  lam_ML = lam, 
                                  objective = obj,

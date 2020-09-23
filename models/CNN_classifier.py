@@ -1,18 +1,13 @@
-#!/usr/bin/env python2
-# -*- coding: utf-8 -*-
-
-from __future__ import division
-
-from torch.nn.parameter import Parameter
+import torch
 import torch.nn as nn
 import torch.nn.functional as F
-import torch
 
 class CNN(nn.Module):
    
-    def __init__(self,y_dim):
+    def __init__(self, y_dim):
         """
         Initialize classifier
+
         Inputs:
         - y_dim : number of classes
         """
@@ -32,21 +27,17 @@ class CNN(nn.Module):
         - x : input data sample
         
         Outputs:
-        - output: unnormalized output
+        - out: unnormalized output
         - prob_out: probability output
         """
-        x = self.conv1(x)
-        x = F.relu(x)
-        x = self.conv2(x)
-        x = F.relu(x)
+        x = F.relu(self.conv1(x))
+        x = F.relu(self.conv2(x))
         x = F.max_pool2d(x, 2)
         x = self.dropout1(x)
         x = torch.flatten(x, 1)
-        x = self.fc1(x)
-        x = F.relu(x)
+        x = F.relu(self.fc1(x))
         x = self.dropout2(x)
-        output = self.fc2(x)
-        prob_out = F.softmax(output)
+        out = self.fc2(x)
+        prob_out = F.softmax(out)
         
-        return prob_out,output
-    
+        return prob_out, out

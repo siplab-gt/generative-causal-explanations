@@ -14,7 +14,7 @@ import torch.nn.functional as F
 import torch
 import torchvision.transforms as transforms
 import torchvision.models as models
-from imagenet_zebra_gorilla_dataloader import Imagenet_Gor_Zeb
+#from imagenet_zebra_gorilla_dataloader import Imagenet_Gor_Zeb
 import pickle
 
 import loss_functions
@@ -162,7 +162,7 @@ def CVAE(model = "mnist_VAE_CNN", # currently not used
         np.random.seed(randseed)
         torch.manual_seed(randseed)
     # Device configuration
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')    
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     # Generate data
     if data_type == '2dpts':    
         # --- construct projection matrices ---
