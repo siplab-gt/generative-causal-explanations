@@ -18,7 +18,7 @@ Inputs:
 Outputs:
     - I_flow - information flow for each of the z dimensions
 """
-def information_flow(params, decoder, classifier,device, What=None):
+def information_flow(params, decoder, classifier, device, What=None):
     #print('computing causal effect with No=%d, Ni=%d' % (params["No"],params["Ni"]))
     latent_vec = np.zeros((params["z_dim"]*params["No"]*params["Ni"],params["z_dim"]))
     count = 0
@@ -69,7 +69,6 @@ def information_flow(params, decoder, classifier,device, What=None):
         qo_log = torch.log(qo_vec+eps_add*torch.ones_like(qo_vec))
         I_sum_p -= torch.sum(torch.mul(qo_vec,qo_log))
         I_flow[kk] = -I_sum_p.detach().cpu().numpy()
-
  
     return I_flow
         

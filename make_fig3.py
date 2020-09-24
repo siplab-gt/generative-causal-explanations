@@ -71,7 +71,9 @@ traininfo = gce.train(X, K, L,
                       batch_size=batch_size,
                       lr=lr)
 #torch.save(gce, 'results/gce.pth')
-#gce = torch.load('results/gce.pth', map_location=device)
+
+# %%
+gce = torch.load('results/gce.pth', map_location=device)
 
 # %% generate explanation and create figure
 sample_ind = np.concatenate((np.where(vaY == 0)[0][:4],

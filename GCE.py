@@ -105,7 +105,7 @@ class GenerativeCausalExplainer:
                  'b1'                : b1,
                  'b2'                : b2,
                  'use_ce'            : use_ce}
-        ceparams = {
+        self.ceparams = {
                   'Nalpha'           : Nalpha,
                   'Nbeta'            : Nbeta,
                   'K'                : K,
@@ -140,17 +140,17 @@ class GenerativeCausalExplainer:
 
             # compute causal effect
             if causal_obj == 'IND_UNCOND':
-                causalEffect, ceDebug = causaleffect.ind_uncond(ceparams,
-                    self.decoder, self.classifier, self.device)
+                causalEffect, ceDebug = causaleffect.ind_uncond(
+                    self.ceparams, self.decoder, self.classifier, self.device)
             elif causal_obj == 'IND_COND':
-                causalEffect, ceDebug = causaleffect.ind_cond(ceparams,
-                    self.decoder, self.classifier, self.device)
+                causalEffect, ceDebug = causaleffect.ind_cond(
+                    self.ceparams, self.decoder, self.classifier, self.device)
             elif causal_obj == 'JOINT_UNCOND':
-                causalEffect, ceDebug = causaleffect.joint_uncond(ceparams,
-                    self.decoder, self.classifier, self.device)
+                causalEffect, ceDebug = causaleffect.joint_uncond(
+                    self.ceparams, self.decoder, self.classifier, self.device)
             elif causal_obj == 'JOINT_COND':
-                causalEffect, ceDebug = causaleffect.joint_cond(ceparams,
-                    self.decoder, self.classifier, self.device)
+                causalEffect, ceDebug = causaleffect.joint_cond(
+                    self.ceparams, self.decoder, self.classifier, self.device)
             else:
                 print('Invalid causal objective!')
             
@@ -216,3 +216,15 @@ class GenerativeCausalExplainer:
                     Xhats[isamp,latent_dim,iz,:,:,:] = img
                     yhats[isamp,latent_dim,iz] = yhat
         return Xhats, yhats
+    
+    """
+    Compute the information flow between individual latent factors and classifier output.
+    :param dim: list of dimensions i to compute -I(z_i; Yhat) for
+    """
+    def informationFlow(self, dims):
+        ndims = len(dims)
+        Is = np.zeros(ndims)
+        for (i, dim) in enumerate(dims):
+            Is[i] = causaleffect.joint_uncond_singledim(
+                self.ceparams, self.decoder, self.classifier,
+                self.device, dim)

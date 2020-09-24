@@ -8,7 +8,8 @@ import torch.nn as nn
 
 class Encoder(nn.Module):
 
-    def __init__(self, z_dim, c_dim, x_dim): # x_dim : total number of pixels
+    def __init__(self, z_dim, c_dim, x_dim,
+                 filt_per_layer=64): # x_dim : total number of pixels
         super(Encoder, self).__init__()
         self.model = nn.Sequential(
             nn.Conv2d(int(c_dim), 64, 4, stride=2, padding=1),  
