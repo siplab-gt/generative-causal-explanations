@@ -13,6 +13,7 @@ import numpy as np
 import torch
 import util
 import plotting
+from GCE import GenerativeCausalExplainer
 
 # --- parameters ---
 # dataset
@@ -23,9 +24,9 @@ classifier_path = 'pretrained_models/mnist_38_classifier'
 vae_path = 'pretrained_models/mnist_38_vae'
 K = 1
 L = 7
-train_steps = 8000
-Nalpha = 25
-Nbeta = 100
+train_steps = 100 # TODO
+Nalpha = 10 # TODO - was 25
+Nbeta = 10 # TODO - was 100
 lam = 0.05
 batch_size = 64
 lr = 5e-4
@@ -70,10 +71,12 @@ traininfo = gce.train(X, K, L,
                       lam=lam,
                       batch_size=batch_size,
                       lr=lr)
-#torch.save(gce, 'results/gce.pth')
+torch.save(gce, 'results/gce.pth')
 
 # %%
 gce = torch.load('results/gce.pth', map_location=device)
+I = gce.informationFlow()
+Is = gce.informationFlow_singledim(range(0,K+L))
 
 # %% generate explanation and create figure
 sample_ind = np.concatenate((np.where(vaY == 0)[0][:4],

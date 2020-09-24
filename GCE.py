@@ -167,7 +167,7 @@ class GenerativeCausalExplainer:
             debug['loss_nll_kld'][k] = (lam*nll_kld).item()
             if self.params['debug_print']:
                 print("[Step %d/%d] time: %4.2f  [CE: %g] [ML: %g] [loss: %g]" % \
-                      (k, steps, time.time() - start_time, debug['loss_ce'][k],
+                      (k+1, steps, time.time() - start_time, debug['loss_ce'][k],
                       debug['loss_nll'][k], debug['loss'][k]))
             if self.params['save_output'] and k % 1000 == 0:
                 torch.save({
@@ -216,15 +216,28 @@ class GenerativeCausalExplainer:
                     Xhats[isamp,latent_dim,iz,:,:,:] = img
                     yhats[isamp,latent_dim,iz] = yhat
         return Xhats, yhats
-    
+
+
+    """
+    Compute the information flow between latent factors and classifier,
+    output, I(z; Yhat).
+    """
+    def informationFlow(self):
+        negI, _ = causaleffect.joint_uncond(
+            self.ceparams, self.decoder, self.classifier, self.device)
+        return -1. * negI
+
+
     """
     Compute the information flow between individual latent factors and classifier output.
-    :param dim: list of dimensions i to compute -I(z_i; Yhat) for
+    :param dim: list of dimensions i to compute I(z_i; Yhat) for
     """
-    def informationFlow(self, dims):
+    def informationFlow_singledim(self, dims):
         ndims = len(dims)
         Is = np.zeros(ndims)
         for (i, dim) in enumerate(dims):
-            Is[i] = causaleffect.joint_uncond_singledim(
+            negI, _ = causaleffect.joint_uncond_singledim(
                 self.ceparams, self.decoder, self.classifier,
                 self.device, dim)
+            Is[i] = -1. * negI
+        return Is

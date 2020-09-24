@@ -57,7 +57,7 @@ Inputs:
     - decoder
     - classifier
     - device
-    - dim (i : compute -I(z_i; Yhat))
+    - dim (i : compute -I(z_i; Yhat) **note: i is zero-indexed!**)
 Outputs:
     - negCausalEffect (sample-based estimate of -I(z_i; Yhat))
     - info['xhat']
@@ -72,8 +72,7 @@ def joint_uncond_singledim(params, decoder, classifier, device, dim):
         z_fix = np.random.randn(1)
         zs = np.zeros((params['Nbeta'],params['z_dim']))  
         for j in range(0, params['Nbeta']):
-            z_nofix = np.random.randn(params['K']+params['L']-1)
-            zs[j,[0:dim, dim+1:params['K']+params['L']]] = z_nofix
+            zs[j,:] = np.random.randn(params['K']+params['L'])
             zs[j,dim] = z_fix
         # decode and classify batch of Nbeta samples with same alpha
         xhat = decoder(torch.from_numpy(zs).float().to(device))
