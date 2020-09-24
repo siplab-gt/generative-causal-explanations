@@ -221,23 +221,37 @@ class GenerativeCausalExplainer:
     """
     Compute the information flow between latent factors and classifier,
     output, I(z; Yhat).
+    :param Nalpha: if specified, used for this computation only
+    :param Nbeta: if specified, used for this computation only
     """
-    def informationFlow(self):
+    def informationFlow(self, Nalpha=None, Nbeta=None):
+        ceparams = self.ceparams.copy()
+        if Nalpha is not None:
+            ceparams['Nalpha'] = Nalpha
+        if Nbeta is not None:
+            ceparams['Nbeta'] = Nbeta
         negI, _ = causaleffect.joint_uncond(
-            self.ceparams, self.decoder, self.classifier, self.device)
+            ceparams, self.decoder, self.classifier, self.device)
         return -1. * negI
 
 
     """
     Compute the information flow between individual latent factors and classifier output.
     :param dim: list of dimensions i to compute I(z_i; Yhat) for
+    :param Nalpha: if specified, used for this computation only
+    :param Nbeta: if specified, used for this computation only
     """
-    def informationFlow_singledim(self, dims):
+    def informationFlow_singledim(self, dims, Nalpha=None, Nbeta=None):
+        ceparams = self.ceparams.copy()
+        if Nalpha is not None:
+            ceparams['Nalpha'] = Nalpha
+        if Nbeta is not None:
+            ceparams['Nbeta'] = Nbeta
         ndims = len(dims)
         Is = np.zeros(ndims)
         for (i, dim) in enumerate(dims):
             negI, _ = causaleffect.joint_uncond_singledim(
-                self.ceparams, self.decoder, self.classifier,
+                ceparams, self.decoder, self.classifier,
                 self.device, dim)
             Is[i] = -1. * negI
         return Is
