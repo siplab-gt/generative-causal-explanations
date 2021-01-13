@@ -25,8 +25,8 @@ Outputs:
     (Note: negCausalEffect = negHYhat + EalphaHYhatgivenalpha
 """
 def ind_uncond(params, decoder, classifier, device, What=None):
-    params["Ni"] = params["Nalpha"] # TODO - check this and replace Ni below
-    params["No"] = params["Nbeta"] # TODO - check this and replace No below
+    #params["Ni"] = params["Nalpha"]
+    #params["No"] = params["Nbeta"]
     latent_vec = np.zeros((params["alpha_dim"]*params["No"]*params["Ni"],params["z_dim"]))
     count = 0
     for kk in range(params["alpha_dim"]):
@@ -111,8 +111,8 @@ Outputs:
     - info["Ealpha_H_Yhatgivenalphabeta"]
 """
 def ind_cond(params, decoder, classifier, device, What=None):
-    params["Ni"] = params["Nalpha"] # TODO - check this and replace Ni below
-    params["No"] = params["Nbeta"] # TODO - check this and replace No below
+    #params["Ni"] = params["Nalpha"]
+    #params["No"] = params["Nbeta"]
     latent_vec = np.zeros((params["alpha_dim"]*params["No"]*params["Ni"],params["z_dim"]))
     count = 0
     # Loop over causal dimensions
@@ -195,8 +195,8 @@ Outputs:
     - info["yhat"]
 """
 def joint_uncond(params, decoder, classifier, device, What=None):
-    params["Ni"] = params["Nalpha"] # TODO - check this and replace Ni below
-    params["No"] = params["Nbeta"] # TODO - check this and replace No below
+    #params["Ni"] = params["Nalpha"]
+    #params["No"] = params["Nbeta"]
     # Generate data associated and classify the output
     latent_vec = np.zeros((params["No"]*params["Ni"], params["z_dim"]))
     count = 0
@@ -257,8 +257,8 @@ Outputs:
     - info["yhat"]
 """
 def joint_cond(params, decoder, classifier, device, What=None):
-    params["Ni"] = params["Nalpha"] # TODO - check this and replace Ni below
-    params["No"] = params["Nbeta"] # TODO - check this and replace No below
+    #params["Ni"] = params["Nalpha"]
+    #params["No"] = params["Nbeta"]
     latent_vec = np.zeros((params["No"]*params["Ni"], params["z_dim"]))
     count = 0
     # causal factors are in range(0,alpha_dim)

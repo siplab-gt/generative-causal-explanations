@@ -1,3 +1,0 @@
-selectAlpha_fmnist_JOINT_UNCOND_zdim6_alpha2_No100_Ni25_lam0.05_class034
-
-batch size 32
