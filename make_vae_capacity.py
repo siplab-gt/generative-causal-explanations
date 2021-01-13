@@ -1,8 +1,8 @@
 """
     make_vae_capacity.py
     
-    Produces Figure X in O'Shaughnessy et al., 'Generative causal
-    explanations of black-box classifiers,' arXiv, June 2020:
+    Produces Figure 18 in O'Shaughnessy et al., 'Generative causal
+    explanations of black-box classifiers,' Proc. NeurIPS 2020:
     information flow and explanation quality as VAE capacity is varied.
 """
 
