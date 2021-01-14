@@ -4,12 +4,12 @@ Code for "[Generative causal explanations of black-box classifiers](https://arxi
 `demo.py` contains code demonstrating the use of the generative causal explainer (GCE) class (`GCE.py`) and plotting functions (`plotting.py`). The demo code reproduces Figure 3 (creating an explanation of a simple pretrained MNIST 3/8 classifier) and is the easiest place to start.
 
 ## Reproduce main paper plots
-The following code can be used to recreate the plots in the main paper.
+The following scripts recreate the plots in the main paper:
 
 **Figure 3** (global explanations of MNIST digits)
-Run `make_fig3.py`. By default, this script will load a pretrained classifier from `pretrained_models/mnist_38_classifier/`, train the explanatory VAE, and generate plots showing global explanations.
+Run `make_fig3.py`. By default, this script will load a pretrained classifier from `pretrained_models/mnist_38_classifier/` and a pretrained explanatory VAE from `pretrained_models/mnist_38_gce/`.
 - *To retrain the classifier:* run `train_mnist_classifier.py`, setting `dataset = 'mnist'` and `class_use = np.array([3,8])`.
-- *To use the provided pretrained explanatory VAE:* A pretrained explanatory VAE for figure 3 is located in `pretrained_models/mnist_38_gce/`. To generate figures with this pretrained model, simply comment/uncomment the relevant lines under "train GCE"
+- *To retrain the explanatory VAE:* set `retrain_gce = True`, optionally changing any of the parameters at the top of the file. You may also want to set `save_gce = True` and change `gce_path`.
 
 **Figure 4** (comparison of glabal explanations with other methods)
 - Left panel (local explanations from other popular techniques)
@@ -17,18 +17,18 @@ Run `make_fig3.py`. By default, this script will load a pretrained classifier fr
 - Right side of plot (our local explanation)
   Run `make_fig4_right.py`. By default, the script will load a pretrained classifier from `pretrained_models/mnist_38_classifier/`, load the corresponding pretrained explanatory VAE from `pretrained_models/mist_38_gce/`, and generate plots showing global explanations.
    - *To retrain the classifier:* The default pretrained classifier was created from `train_mnist_classifier.py` with `dataset = 'mnist'` and `class_use = np.array([3,8])`. To use a different classifier, change `classifier_path` at the top of the file.
-   - *To retrain the explanatory VAE:* The default pretrained VAE was created from `make_fig3.py` (be sure to uncomment the lines in this file that save the GCE object if you make changes). To use a different classifier, change `gce_path` at the top of the `make_fig4_right.py`.
+   - *To retrain the explanatory VAE:* the default pretrained VAE was created from `make_fig3.py` (be sure to uncomment the lines in this file that save the GCE object if you make changes). To use a different classifier, change `gce_path` at the top of the `make_fig4_right.py`.
 
 **Figure 5** (quantitative results with fashion MNIST)
- - Subfigures (a) and (b) (information flow and reduction in classifier accuracy for fashion MNIST classes 0/3/4)
+ - Subfigures (a-b) (information flow and reduction in classifier accuracy for fashion MNIST classes 0/3/4)
    Run `make_fig5ab.py`. By default, the script will load a pretrained classifier from `pretrained_models/fmnist_034_classifier/`, load the corresponding pretrained explanatory VAE from `pretrained_models/fmnist_034_gce/`, and compute and plot figures 5(a-b).
    - *To retrain the classifier:* The default pretrained classifier was created from `train_mnist_classifier.py` with `dataset = 'fmnist'` and `class_use = np.array([0,3,4])`. To use a different classifier, change `classifier_path` at the top of the file.
-   - *To retrain the explanatory VAE:* Set `retrain_gce = True`, optionally changing any of the parameters at the top of the file. You may also want to set `save_gce = True` and change `gce_path`.
- - Subfigure (c) (global explanation of fashion MNIST classes 0/3/4)
+   - *To retrain the explanatory VAE:* set `retrain_gce = True`, optionally changing any of the parameters at the top of the file. You may also want to set `save_gce = True` and change `gce_path`.
+ - Subfigures (c-d) (global explanation of fashion MNIST classes 0/3/4)
    Run `make_fig5cd.py`. By default, the script will load a pretrained classifier from `pretrained_models/fmnist_034_classifier/`, load the corresponding pretrained explanatory VAE from `pretrained_models/fmnist_034_gce/`, and create latent plot sweeps such as those in Figure 5(c-d) for each latent factor.
    - *To retrain the classifier:* The default pretrained classifier was created from `train_mnist_classifier.py` with `dataset = 'fmnist'` and `class_use = np.array([0,3,4])`. To use a different classifier, change `classifier_path` at the top of the file.
-   - *To retrain the explanatory VAE:* Set `retrain_gce = True`, optionally changing any of the parameters at the top of the file. You may also want to set `save_gce = True` and change `gce_path`.
-   
+   - *To retrain the explanatory VAE:* set `retrain_gce = True`, optionally changing any of the parameters at the top of the file. You may also want to set `save_gce = True` and change `gce_path`.
+
 ## Reproduce appendix plots
 
 *Figure 8* (empirical results for causal objective with linear/gaussian generative map, linear classifier)

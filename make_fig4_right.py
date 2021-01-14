@@ -4,7 +4,6 @@ from util import *
 from load_mnist import *
 import os
 
-
 # --- parameters ---
 z_dim    = 8
 img_size = 28

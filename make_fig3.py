@@ -32,8 +32,8 @@ lr = 5e-4
 # other
 randseed = 0
 gce_path = './pretrained_models/mnist_38_gce'
-retrain_gce = True # train explanatory VAE from scratch
-save_gce = True # save/overwrite pretrained explanatory VAE at gce_path
+retrain_gce = False # train explanatory VAE from scratch
+save_gce = False # save/overwrite pretrained explanatory VAE at gce_path
 
 
 # --- initialize ---

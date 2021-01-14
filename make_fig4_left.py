@@ -431,4 +431,3 @@ plt.imshow(l2x_explanation_8, vmin=-2, vmax=2, cmap=cmap, interpolation='nearest
 plotting.outline_mask(ax, x8 > 0, bounds=(0,27,0,27))
 plt.axis('off')
 plt.savefig('./figs/fig4_l2x_8.svg', bbox_inches=0)
-

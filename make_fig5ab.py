@@ -162,4 +162,3 @@ plt.ylabel('Classifier accuracy')
 plt.title('Classifier accuracy after removing aspect')
 plt.savefig('./figs/fig5b.svg')
 plt.savefig('./figs/fig5b.pdf')
-# %%
