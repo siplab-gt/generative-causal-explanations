@@ -32,8 +32,8 @@ lr = 5e-4
 # other
 randseed = 0
 gce_path = './pretrained_models/mnist_38_gce'
-retrain_gce = True # train explanatory VAE from scratch
-save_gce = True # save/overwrite pretrained explanatory VAE at gce_path
+retrain_gce = False # train explanatory VAE from scratch
+save_gce = False # save/overwrite pretrained explanatory VAE at gce_path
 
 
 # --- initialize ---
@@ -102,4 +102,4 @@ sample_ind = np.concatenate((np.where(vaY == 0)[0][:4],
 x = torch.from_numpy(vaX[sample_ind])
 zs_sweep = [-3., -2., -1., 0., 1., 2., 3.]
 Xhats, yhats = gce.explain(x, zs_sweep)
-plotting.plotExplanation(1.-Xhats, yhats, save_path='figs/fig3')
+plotting.plotExplanation(1.-Xhats, yhats, save_path='figs/demo')

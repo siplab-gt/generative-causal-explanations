@@ -5,6 +5,9 @@
     explanations of black-box classifiers,' Proc. NeurIPS 2020: empirical
     results for causal/information flow objectives with linear/gaussian
     generative map and linear classifier.
+
+    Note: this script creates the file ./results/fig8.mat. The matlab script
+    make_fig8_fig9_fig10.m creates the final plots in the paper.
 """
 
 #%%

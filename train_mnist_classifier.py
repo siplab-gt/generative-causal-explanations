@@ -1,4 +1,9 @@
-#%%
+"""
+    train_mnist_classifier.py
+    
+    Trains MNIST/FMNIST classifier for use in figure-generating scripts.
+"""
+
 from load_mnist import *
 import numpy as np
 import torch.nn as nn
@@ -8,7 +13,7 @@ import time
 import scipy.io as sio
 import os
 
-#%% --- options ---
+# --- options ---
 dataset = 'mnist'             # 'mnist' or 'fmnist'
 class_use = np.array([3,8])   # classes to select from dataset
 batch_size = 64               # training batch size
@@ -26,7 +31,8 @@ newClass = range(0,y_dim)
 test_size = 100
 save_folder = os.path.join(save_folder_root, dataset + '_' + class_use_str[1:(len(class_use_str)-1):2] + '_classifier')
 
-#%% --- load data ---
+
+# --- load data ---
 if not os.path.exists(save_folder):
     os.makedirs(save_folder)
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -41,7 +47,8 @@ elif dataset == 'fmnist':
 else:
     print('dataset must be ''mnist'' or ''fmnist''!')
 
-#%% --- train ---
+
+# --- train ---
 batch_idxs = len(trX) // batch_size    
 batch_idxs_val = len(vaX) // test_size    
 ce_loss = nn.CrossEntropyLoss()
@@ -115,5 +122,3 @@ for epoch in range(0,epochs):
          'img_size'        : img_size,
          'gamma'           : gamma,
          'epochs'          : epochs})
-
-# %%

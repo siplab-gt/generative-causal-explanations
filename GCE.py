@@ -1,31 +1,14 @@
 import time
 import datetime
 import re
-
 import numpy as np
 import scipy.io as sio
-import scipy as sp
-import scipy.linalg
-
 import torch
-import torch.nn as nn
-import torch.nn.functional as F
-import torchvision.transforms as transforms
-import torchvision.models as torchmodels
-from torch.autograd import Variable
-import pickle
-
 import loss_functions
 import causaleffect
-import plotting
-import util
-
-import matplotlib.pyplot as plt
 import os
-
 from util import *
 from load_mnist import *
-from mnist_test_fnc import sweepLatentFactors
 
 class GenerativeCausalExplainer:
 

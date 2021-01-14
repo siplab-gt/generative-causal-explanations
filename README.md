@@ -1,7 +1,7 @@
-Code for "[Generative causal explanations of black-box classifiers](https://arxiv.org/abs/2006.13913)" by Matt O'Shaughnessy, Greg Canal, Marissa Connor, Mark Davenport, and Chris Rozell (Proc. NeurIPS 2020). Requires only numpy (version 3.8.5 used), pytorch (version 3.8.5 used), and matplotlib (version 3.3.1 used).
+Code for "[Generative causal explanations of black-box classifiers](https://arxiv.org/abs/2006.13913)" by Matt O'Shaughnessy, Greg Canal, Marissa Connor, Mark Davenport, and Chris Rozell (Proc. NeurIPS 2020). Requires only numpy (version 3.8.5 used), pytorch (version 3.8.5 used), and matplotlib (version 3.3.1 used) to generate results; matlab used to plot some results.
 
 ## Demo/quick start
-`demo.py` contains code demonstrating the use of the generative causal explainer (GCE) class (`GCE.py`) and plotting functions (`plotting.py`). The demo code reproduces Figure 3 (creating an explanation of a simple pretrained MNIST 3/8 classifier) and is the easiest place to start.
+`demo.py` contains code demonstrating the use of the generative causal explainer (GCE) class (`GCE.py`) and explanation plotting functions (`plotting.py`). The demo code reproduces Figure 3 (creating an explanation of a simple pretrained MNIST 3/8 classifier) and is the easiest place to start.
 
 ## Reproduce main paper plots
 The following scripts recreate the plots in the main paper:
@@ -31,45 +31,42 @@ Run `make_fig3.py`. By default, this script will load a pretrained classifier fr
 
 ## Reproduce appendix plots
 
-*Figure 8* (empirical results for causal objective with linear/gaussian generative map, linear classifier)
- - Run `visualize_causalobj_linear.py`. This will save results to `results/visualize_causalobj_linear.mat`.
- - To create plot: run first cell of `visualize_causalobj_plot.m`
+**Figure 8** (empirical results for causal objective with linear/gaussian generative map, linear classifier)
+ - Run `make_fig8.py`. This will generate some rough plots and save results to `results/fig8.mat`.
+ - To create plots in paper: run first cell of `make_fig8_fig9_fig10.m`.
 
-*Figures 9-10* (empirical results for causal/combined objective with linear/gaussian generative map, AND classifier)
- - To generate data: run `visualize_causalobj_and.py`. This will save results to `results/visualize_causalobj_and.mat`.
- - To create plots: run second and third cells of `visualize_causalobj_plot.m`
+**Figures 9-10** (empirical results for causal/combined objective with linear/gaussian generative map, AND classifier)
+ - Run `make_fig9_fig10.py`. This will generate some rough plots and save results to `results/fig9.mat`.
+ - To create plots in paper: run second and third cells of `make_fig8_fig9_fig10.m`.
 
-*Figure 11* (snapshots of parameter tuning procedure for MNIST digits)
-- (optional) To retrain classifier: Run `train_mnist_classifier.py`, setting `dataset = 'mnist'` and `class_use = np.array([3,8])`. A pretrained model is located in `pretrained_models/mnist_38_classifier/`.
-- To generate data: run `CVAE.py`, set `data_type` to `mnist`, `decoder_net` to `VAE_CNN`, and `classifier` to `cnn`
-- To make plots: run `make_tuning_mnist.m`, changing the file path to the results saved by the previous step
+**Figure 11** (snapshots of parameter tuning procedure for MNIST 3/8)
+Run `make_fig11.m`. This script uses pre-saved results in `results/tuning_mnist38_*.mat`. These .mat files contain additional information from the parameter turning process shown.
 
-*Figure 12* (additional results for global explanations of MNIST digits):
-(optional) To retrain classifier: Run `train_mnist_classifier.py`, setting `dataset = 'mnist'` and `class_use = np.array([3,8])`. A pretrained model is located in `pretrained_models/mnist_38_classifier/`.
-- To train explanatory VAE: Run `CVAE.py`, set `data_type` to `mnist`, `decoder_net` to `VAE_CNN`, and `classifier` to `cnn`
-- To make plot: run `make_mnist_qual.py`. This script loads pretrained classifier and VAE models; change the paths and parameters at the top of the script to generate plots from different models. 
+**Figure 12** (additional results for global explanations of MNIST digits):
+Contains complete results from Figure 3; see `make_fig3.py`.
 
-*Figure 13* (global explanations of 1/4/9 MNIST digits):
-- (optional) To retrain classifier: Run `train_mnist_classifier.py`, setting `dataset = 'mnist'` and `class_use = np.array([1,4,9])`. A pretrained model is located in `pretrained_models/mnist_149_classifier/`.
-- To train explanatory VAE: Run `CVAE.py`, set `data_type` to `mnist`, `decoder_net` to `VAE_CNN`, and `classifier` to `cnn`
-- To make plot: run `make_mnist_qual.py`. This script loads pretrained classifier and VAE models; change the paths and parameters at the top of the script to generate plots from different models. 
+**Figure 13** (global explanations of 1/4/9 MNIST digits):
+Run `make_fig13.py`. By default, this script will load a pretrained classifier from `pretrained_models/mnist_149_classifier/` and a pretrained explanatory VAE from `pretrained_models/mnist_149_gce/`.
+- *To retrain the classifier:* run `train_mnist_classifier.py`, setting `dataset = 'mnist'` and `class_use = np.array([1,4,9])`.
+- *To retrain the explanatory VAE:* set `retrain_gce = True`, optionally changing any of the parameters at the top of the file. You may also want to set `save_gce = True` and change `gce_path`.
 
-*Figure 14* (zoomed global explanations of 1/4/9 MNIST digits):
-- (optional) To retrain classifier: Run `train_mnist_classifier.py`, setting `dataset = 'mnist'` and `class_use = np.array([1,4,9])`. A pretrained model is located in `pretrained_models/mnist_149_classifier/`.
-- To train explanatory VAE: Run `CVAE.py`, set `data_type` to `mnist`, `decoder_net` to `VAE_CNN`, and `classifier` to `cnn`
-- To make plot: run `make_mnist_qual.py`. This script loads pretrained classifier and VAE models; change the paths and parameters at the top of the script to generate plots from different models. 
+**Figure 14** (zoomed global explanations of 1/4/9 MNIST digits):
+Run `make_fig14.py`. By default, this script will load a pretrained classifier from `pretrained_models/mnist_149_classifier/` and a pretrained explanatory VAE from `pretrained_models/mnist_149_gce/`.
+- *To retrain the classifier:* run `train_mnist_classifier.py`, setting `dataset = 'mnist'` and `class_use = np.array([1,4,9])`.
+- *To retrain the explanatory VAE:* set `retrain_gce = True`, optionally changing any of the parameters at the top of the file. You may also want to set `save_gce = True` and change `gce_path`. 
 
-*Figure 15* (detailed plots of our method as used in local comparison)
-- (optional) To retrain classifier: Run `train_mnist_classifier.py`, setting `dataset = 'mnist'` and `class_use = np.array([3,8])`. A pretrained model is located in `pretrained_models/mnist_38_classifier/`.
-- To train explanatory VAE: run `CVAE.py`, set `data_type` to `mnist`, `decoder_net` to `VAE_CNN`, and `classifier` to `cnn`
-- To make plot: run `comparisons_mnist_ours.py`
+**Figure 15** (detailed plots of our method as used in local comparison)
+Contains complete results from Figure 4 (right); see `make_fig4.py`.
 
-*Figure 16* (snapshots of parameter tuning procedure for fashion MNIST digits)
-- (optional) To retrain classifier: Run `train_mnist_classifier.py`, setting `dataset = 'fmnist'` and `class_use = np.array([0,3,4])`. A pretrained model is located in `pretrained_models/fmnist_034_classifier/`.
-- To generate data: run `CVAE.py`, set `data_type` to `mnist`, `decoder_net` to `VAE_CNN`, and `classifier` to `cnn`
-- To make plots: run `make_tuning_mnist.m`, changing the file path to the results saved by the previous step
+**Figure 16** (snapshots of parameter tuning procedure for 0/3/4 fashion MNIST digits)
+Run `make_fig16.m`. This script uses pre-saved results in `results/tuning_fmnist034_*.mat`. These .mat files contain additional information from the parameter turning process shown.
 
-*Figure 17* (detailed global explanations of fashion MNIST)
-- (optional) To retrain classifier: Run `train_mnist_classifier.py`, setting `dataset = 'fmnist'` and `class_use = np.array([0,3,4])`. A pretrained model is located in `pretrained_models/fmnist_034_classifier/`.
-- To train explanatory VAE: Run `CVAE.py`, set `data_type` to `fmnist`, `decoder_net` to `VAE_fMNIST`, and `classifier` to `cnn_fmnist`
-- To make plots: run `make_fmnist_qual.py`. This script loads pretrained classifier and VAE models; change the paths and parameters at the top of the script to generate plots from different models.
+**Figure 17** (detailed global explanations of fashion MNIST)
+Contains complete results from Figure 5(c-d); see `make_fig5cd.py`.
+
+**Figure 18** (experiments comparing VAE capacity)
+- Run `make_fig18_fig19.py`, which creates the file `results/fig18.mat`.
+- Run the matlab script `make_fig18.m` to create the final plot. Note that this script requires the [cbrewer](https://www.mathworks.com/matlabcentral/fileexchange/34087-cbrewer-colorbrewer-schemes-for-matlab) matlab package.
+
+**Figure 19** (qualitative results for varying VAE capacity)
+Contains qualitative results from Figure 18; see `make_fig18_fig19.py`, which creates the files `./figs/fig19/XXfilters_lambdaYYY*`.
