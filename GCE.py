@@ -219,7 +219,7 @@ class GenerativeCausalExplainer:
 
 
     """
-    Compute the information flow between latent factors and classifier,
+    Compute the information flow between latent factors and classifier
     output, I(z; Yhat).
     :param Nalpha: if specified, used for this computation only
     :param Nbeta: if specified, used for this computation only
@@ -236,7 +236,8 @@ class GenerativeCausalExplainer:
 
 
     """
-    Compute the information flow between individual latent factors and classifier output.
+    Compute the information flow between individual latent factors and
+    classifier output, {I(z_i; Yhat) : i in dims}.
     :param dim: list of dimensions i to compute I(z_i; Yhat) for
     :param Nalpha: if specified, used for this computation only
     :param Nbeta: if specified, used for this computation only

@@ -5,11 +5,11 @@ import torch
 joint_uncond:
     Sample-based estimate of "joint, unconditional" causal effect, -I(alpha; Yhat).
 Inputs:
-    - params['Nalpha']
-    - params['Nbeta']
-    - params['K']
-    - params['L']
-    - params['M']
+    - params['Nalpha'] monte-carlo samples per causal factor
+    - params['Nbeta']  monte-carlo samples per noncausal factor
+    - params['K']      number of causal factors
+    - params['L']      number of noncausal factors
+    - params['M']      number of classes (dimensionality of classifier output)
     - decoder
     - classifier
     - device
@@ -40,6 +40,7 @@ def joint_uncond(params, decoder, classifier, device):
     negCausalEffect = -I
     info = {"xhat" : xhat, "yhat" : yhat}
     return negCausalEffect, info
+
 
 """
 joint_uncond_singledim:

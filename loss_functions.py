@@ -1,17 +1,3 @@
-from __future__ import division
-import time
-import datetime
-import re
-from enum import Enum
-
-import numpy as np
-import scipy.io as sio
-import scipy as sp
-
-from torch.autograd import Variable
-from torch.nn.parameter import Parameter
-import torch.nn as nn
-import torch.nn.functional as F
 import torch
 
 def linGauss_NLL_loss(Xbatch,What,gamma):
