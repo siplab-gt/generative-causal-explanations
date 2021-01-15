@@ -1,10 +1,12 @@
-Code for "[Generative causal explanations of black-box classifiers](https://arxiv.org/abs/2006.13913)" by Matt O'Shaughnessy, Greg Canal, Marissa Connor, Mark Davenport, and Chris Rozell (Proc. NeurIPS 2020). Generating results requires only python (version 3.8.5 used), numpy (version 1.19.1 used), pytorch (version 1.6.0 used), and matplotlib (version 3.3.1 used) to generate results. Matlab and inkscape were used to create some final plots.
+Code for "[Generative causal explanations of black-box classifiers](https://arxiv.org/abs/2006.13913)" by Matt O'Shaughnessy, Greg Canal, Marissa Connor, Mark Davenport, and Chris Rozell (Proc. NeurIPS 2020).
 
 ## Demo/quick start
 `demo.py` contains code demonstrating the use of the generative causal explainer (GCE) class (`GCE.py`) and explanation plotting functions (`plotting.py`). The demo code reproduces Figure 3 (creating an explanation of a simple pretrained MNIST 3/8 classifier) and is the easiest place to start.
 
 ## Reproduce main paper plots
-The following scripts recreate the plots in the main paper:
+
+**Prerequisites**
+Generating results requires only python (version 3.8.5 used), pytorch (version 1.6.0 with CUDA 10.1 used), numpy (version 1.19.1 used), scipy (version 1.5.2 used), and matplotlib (version 3.3.1 used). Using pretrained models requires CUDA, but you should be able to regenerate the results yourself without. Matlab and inkscape were used to create some final results.
 
 **Figure 3** (global explanations of MNIST digits)
 Run `make_fig3.py`. By default, this script will load a pretrained classifier from `pretrained_models/mnist_38_classifier/` and a pretrained explanatory VAE from `pretrained_models/mnist_38_gce/`.
