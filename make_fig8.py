@@ -10,7 +10,6 @@
     make_fig8_fig9_fig10.m creates the final plots in the paper.
 """
 
-#%%
 import numpy as np
 import scipy.io as sio
 from torch.autograd import Variable
@@ -66,7 +65,7 @@ Z = np.random.randn(params["ntrain"], params["z_dim_true"])
 X = np.matmul(Z, W.T)
 
 
-#%% --- initialize decoder ---
+# --- initialize decoder ---
 from models.linearGaussian import Decoder
 decoder = Decoder(params["x_dim"], params["z_dim"])
 decoder.apply(util.weights_init_normal)
